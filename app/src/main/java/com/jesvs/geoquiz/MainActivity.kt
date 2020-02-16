@@ -1,6 +1,5 @@
 package com.jesvs.geoquiz
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -9,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 
 private const val TAG = "MainActivity"
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         val score = quizViewModel.getScore()
-        Toast.makeText(this, "Your score is ${score} %.", Toast.LENGTH_SHORT).apply {
+        Toast.makeText(this, "Your score is $score %.", Toast.LENGTH_SHORT).apply {
             setGravity(Gravity.TOP, 0, 200)
         }.show()
     }

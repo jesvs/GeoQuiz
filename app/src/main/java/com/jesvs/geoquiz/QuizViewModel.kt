@@ -1,14 +1,11 @@
 package com.jesvs.geoquiz
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-
-private const val TAG = "QuizViewModel"
 
 class QuizViewModel : ViewModel() {
 
     var currentIndex = 0
-    private val questionBank = listOf<Question>(
+    private val questionBank = listOf(
         Question(R.string.question_africa, false),
         Question(R.string.question_americas, true),
         Question(R.string.question_asia, true),
