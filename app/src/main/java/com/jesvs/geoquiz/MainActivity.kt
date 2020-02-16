@@ -9,8 +9,10 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.lifecycle.ViewModelProvider
 
 private const val TAG = "MainActivity"
+private const val KEY_INDEX = "index"
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,23 +22,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prevButton: ImageButton
     private lateinit var questionTextView: TextView
 
-    private val questionBank = listOf<Question>(
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true),
-        Question(R.string.question_australia, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_oceans, true)
-    )
-
-    private val responseBank = mutableListOf<Boolean?>(null, null, null, null, null, null)
-
-    private var currentIndex = 0
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProvider(this).get(QuizViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
+
+        val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
+        quizViewModel.currentIndex = currentIndex
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -87,6 +83,12 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onPause() called")
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.i(TAG, "onSaveInstanceState")
+        outState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+    }
+
     override fun onStop() {
         super.onStop()
         Log.d(TAG, "onStop() called")
@@ -98,36 +100,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun nextQuestion() {
-        currentIndex = (currentIndex + 1) % questionBank.size
+        quizViewModel.moveToNext()
         updateQuestion()
         updateAnswerButtons()
     }
 
     private fun prevQuestion() {
-        currentIndex -= 1
-        if (currentIndex < 0) {
-            currentIndex = questionBank.size - 1
-        }
+        quizViewModel.moveToPrev()
         updateQuestion()
         updateAnswerButtons()
     }
 
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
     }
 
     private fun updateAnswerButtons() {
-        val unanswered = responseBank[currentIndex] == null
+        val unanswered = quizViewModel.currentResponse == null
         trueButton.isEnabled = unanswered
         falseButton.isEnabled = unanswered
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        responseBank[currentIndex] = userAnswer
-        val correctAnswer = questionBank[currentIndex].answer
+        quizViewModel.storeResponse(userAnswer)
 
-        val messageResId = if (userAnswer == correctAnswer) {
+        val messageResId = if (userAnswer == quizViewModel.currentQuestionAnswer) {
             R.string.correct_toast
         } else {
             R.string.incorrect_toast
@@ -136,20 +134,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkResult() {
-        var score = 0
-        for ((i, r) in responseBank.withIndex()) {
-            if (r == null) {
-                return
-            }
-            if (questionBank[i].answer == r) {
-                score++
-            }
+        if (!quizViewModel.testCompleted) {
+            return
         }
-
-        val total = questionBank.size
-        val percentage = score / total.toFloat() * 100
-
-        Toast.makeText(this, "You answered $score right out of ${total}. Your score is ${percentage} %.", Toast.LENGTH_SHORT).apply {
+        val score = quizViewModel.getScore()
+        Toast.makeText(this, "Your score is ${score} %.", Toast.LENGTH_SHORT).apply {
             setGravity(Gravity.TOP, 0, 200)
         }.show()
     }
