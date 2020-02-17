@@ -57,6 +57,19 @@ class QuizViewModel : ViewModel() {
         cheatBank[currentIndex] = true
     }
 
+    fun cheatsRemaining(): Int {
+        var r = 3
+        for (c in cheatBank) {
+            if (c) {
+                r--
+            }
+            if (r <= 0) {
+                return 0
+            }
+        }
+        return r
+    }
+
     fun getScore(): Double {
         var score = 0.0
         for ((i, s) in responseBank.withIndex()) {

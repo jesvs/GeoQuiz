@@ -1,7 +1,9 @@
 package com.jesvs.geoquiz
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prevButton: ImageButton
     private lateinit var cheatButton: Button
     private lateinit var questionTextView: TextView
+    private lateinit var cheatsRemainingTextView: TextView
 
     private val quizViewModel: QuizViewModel by lazy {
         ViewModelProvider(this).get(QuizViewModel::class.java)
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         prevButton = findViewById(R.id.prev_button)
         cheatButton = findViewById(R.id.cheat_button)
         questionTextView = findViewById(R.id.question_text_view)
+        cheatsRemainingTextView = findViewById(R.id.cheats_remaining_text_view)
 
         trueButton.setOnClickListener {
             checkAnswer(true)
@@ -65,10 +69,16 @@ class MainActivity : AppCompatActivity() {
             prevQuestion()
         }
 
-        cheatButton.setOnClickListener {
+        cheatButton.setOnClickListener { view ->
             val answerIsTrue = quizViewModel.currentQuestionAnswer
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Log.i(TAG, "Showing reveal animation")
+                val options = ActivityOptions.makeClipRevealAnimation(view, 0, 0, view.width, view.height)
+                startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+            } else {
+                startActivityForResult(intent, REQUEST_CODE_CHEAT)
+            }
         }
 
         questionTextView.setOnClickListener {
@@ -77,6 +87,7 @@ class MainActivity : AppCompatActivity() {
 
         updateQuestion()
         updateAnswerButtons()
+        updateCheatsRemaining()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -89,6 +100,7 @@ class MainActivity : AppCompatActivity() {
             val isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
             if (isCheater) {
                 quizViewModel.cheated()
+                updateCheatsRemaining()
             }
         }
     }
@@ -114,6 +126,13 @@ class MainActivity : AppCompatActivity() {
     private fun updateQuestion() {
         val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
+    }
+
+    private fun updateCheatsRemaining() {
+        cheatsRemainingTextView.text = resources.getString(R.string.cheats_remaining, quizViewModel.cheatsRemaining())
+        if (quizViewModel.cheatsRemaining() == 0) {
+            cheatButton.isEnabled = false
+        }
     }
 
     private fun updateAnswerButtons() {
