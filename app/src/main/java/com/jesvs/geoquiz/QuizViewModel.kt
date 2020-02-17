@@ -1,10 +1,20 @@
 package com.jesvs.geoquiz
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+
+private const val TAG = "QuizViewModel"
 
 class QuizViewModel : ViewModel() {
 
     var currentIndex = 0
+    val isCheater: Boolean
+    get() = cheatBank[currentIndex]
+
+    init {
+        Log.d(TAG, "QuizViewModel init() called $this")
+    }
+
     private val questionBank = listOf(
         Question(R.string.question_africa, false),
         Question(R.string.question_americas, true),
@@ -43,6 +53,10 @@ class QuizViewModel : ViewModel() {
         responseBank[currentIndex] = response
     }
 
+    fun cheated() {
+        cheatBank[currentIndex] = true
+    }
+
     fun getScore(): Double {
         var score = 0.0
         for ((i, s) in responseBank.withIndex()) {
@@ -53,6 +67,6 @@ class QuizViewModel : ViewModel() {
         return score / questionBank.size * 100
     }
 
-    private val responseBank = mutableListOf<Boolean?>(null, null, null, null, null, null)
-
+    private var responseBank = MutableList<Boolean?>(questionBank.size) { null }
+    private var cheatBank = MutableList<Boolean>(questionBank.size) { false }
 }

@@ -41,6 +41,15 @@
             style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/prev_button"
             android:src="@drawable/arrow_left" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/cheat_button"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/cheat_button" />
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
