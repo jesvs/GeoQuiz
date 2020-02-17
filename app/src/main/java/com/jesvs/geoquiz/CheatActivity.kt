@@ -5,9 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.jesvs.geoquiz.databinding.ActivityCheatBinding
 
 const val EXTRA_ANSWER_SHOWN = "com.jesvs.geoquiz.answer_shown"
 private const val EXTRA_ANSWER_IS_TRUE = "com.jesvs.geoquiz.answer_is_true"
@@ -15,42 +14,38 @@ private const val KEY_CHEATED = "cheater"
 
 class CheatActivity : AppCompatActivity() {
 
-    private lateinit var answerTextView: TextView
-    private lateinit var showAnswerButton: Button
-    private lateinit var apiLevelTextView: TextView
     private var isCheater = false
-
     private var answerIsTrue = false
+    private lateinit var binding: ActivityCheatBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_cheat)
+        binding = ActivityCheatBinding.inflate(layoutInflater)
 
         answerIsTrue = intent.getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false)
-        answerTextView = findViewById(R.id.answer_text_view)
-        showAnswerButton = findViewById(R.id.show_answer_button)
-        apiLevelTextView = findViewById(R.id.api_level_text_view)
 
-        apiLevelTextView.text = getString(R.string.api_level, Build.VERSION.SDK_INT)
+        binding.apiLevelTextView.text = getString(R.string.api_level, Build.VERSION.SDK_INT)
 
         isCheater = savedInstanceState?.getBoolean(KEY_CHEATED, false) ?: false
         if (isCheater) {
             showAnswer()
         }
 
-        showAnswerButton.setOnClickListener {
+        binding.showAnswerButton.setOnClickListener {
             showAnswer()
         }
+
+        setContentView(binding.root)
     }
 
     private fun showAnswer() {
         isCheater = true
-        showAnswerButton.isEnabled = false
+        binding.showAnswerButton.isEnabled = false
         val answerText = when {
             answerIsTrue -> R.string.true_button
             else -> R.string.false_button
         }
-        answerTextView.setText(answerText)
+        binding.answerTextView.setText(answerText)
         setAnswerShownResult()
     }
 

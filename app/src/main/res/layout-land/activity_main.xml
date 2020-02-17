@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
     <TextView
         android:id="@+id/question_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:gravity="center"
         android:padding="24dp"
+        android:textSize="20sp"
         tools:text="@string/question_australia" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
+        android:padding="24dp"
         style="?android:attr/buttonBarStyle">
         <Button
             android:id="@+id/true_button"
@@ -31,32 +35,42 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
+        android:layout_gravity="bottom|center_horizontal"
         style="?android:attr/buttonBarStyle">
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/prev_button"
-            android:layout_gravity="bottom|start"
             style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/prev_button"
             android:src="@drawable/arrow_left" />
-        <Button
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/cheat_button"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/cheat_button" />
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_gravity="bottom|center_horizontal"
+                android:id="@+id/cheat_button"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/cheat_button" />
+            <TextView
+                android:id="@+id/cheats_remaining_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="24dp"
+                tools:text="Cheats remaining: 3" />
+        </LinearLayout>
+
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/next_button"
-            android:layout_gravity="bottom|end"
             style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/next_button"
             android:src="@drawable/arrow_right" />
     </LinearLayout>
-</merge>
+</LinearLayout>
